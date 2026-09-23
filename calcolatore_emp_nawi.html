@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Calcolatore EMP NAWI (DM 93/2017)</title>
+    
+    <meta name="theme-color" content="#ffffff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="EMP NAWI">
+    <link id="manifest-link" rel="manifest" href="">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        body {
+            background-color: #f3f4f6;
+            font-family: 'Inter', system-ui, sans-serif;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        input, select {
+            -webkit-user-select: auto;
+            user-select: auto;
+        }
+    </style>
+</head>
+<body class="text-gray-800 antialiased min-h-screen pb-20">
+
+    <header class="bg-white p-4 shadow-sm border-b border-gray-200 sticky top-0 z-10">
+        <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <img src="marchio-cdc-monte-rosa-laghi-alto-piemonte-rgb.png" alt="Logo Camera di Commercio" class="h-12 md:h-16 object-contain">
+            <h1 class="text-xl md:text-2xl font-bold text-blue-900 text-center md:text-right">Calcolatore EMP NAWI</h1>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto p-4 space-y-6 mt-4">
+        
+        <section class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+            <h2 class="text-lg font-semibold text-gray-700 mb-4 border-b pb-2">Parametri Generali</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-600 mb-2">Classe Strumento</label>
+                    <select id="classeStrumento" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block p-3 transition-shadow">
+                        <option value="1">Classe I (Speciale)</option>
+                        <option value="2">Classe II (Fina)</option>
+                        <option value="3" selected>Classe III (Media)</option>
+                        <option value="4">Classe IIII (Ordinaria)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-600 mb-2">Divisione di verifica (e)</label>
+                    <!-- Qui manteniamo inputmode="decimal" per la tastiera numerica e facciamo in modo di accettare la virgola -->
+                    <input type="text" inputmode="decimal" id="valoreE" placeholder="es. 0,01" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block p-3 transition-shadow" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-600 mb-2">Tipo di verifica</label>
+                    <select id="tipoVerifica" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block p-3 transition-shadow">
+                        <option value="1">Verifica prima (x1)</option>
+                        <option value="2" selected>Verifica periodica (x2)</option>
+                        <option value="3">Controllo casuale (x3)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div id="messaggioAvviso" class="hidden mt-4 p-4 text-sm text-yellow-800 rounded-lg bg-yellow-100 border border-yellow-200" role="alert">
+                <span class="font-bold">Attenzione:</span> Inserisci un valore valido per la divisione "e" per visualizzare l'esito dei calcoli.
+            </div>
+        </section>
+
+        <section class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 border-b pb-4 gap-4">
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-700">Misurazioni</h2>
+                    <p class="text-sm text-gray-500 mt-1">Digita i valori oppure incolla (Ctrl+V) le colonne da Excel.</p>
+                </div>
+                <button onclick="aggiungiRiga()" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-5 rounded-lg transition-colors shadow-sm active:scale-95 flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    Aggiungi Riga
+                </button>
+            </div>
+
+            <div class="overflow-x-auto rounded-lg border border-gray-200">
+                <table class="w-full text-sm text-left text-gray-600">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                        <tr>
+                            <th scope="col" class="px-4 py-3 w-12 text-center">N.</th>
+                            <th scope="col" class="px-4 py-3 min-w-[120px]">Carico (m)</th>
+                            <th scope="col" class="px-4 py-3 min-w-[120px]">Lettura (L)</th>
+                            <th scope="col" class="px-4 py-3 min-w-[100px]">Errore (E)</th>
+                            <th scope="col" class="px-4 py-3 min-w-[100px]">EMP App.</th>
+                            <th scope="col" class="px-4 py-3 min-w-[130px]">Esito</th>
+                            <th scope="col" class="px-2 py-3 w-12 text-center"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabellaCorpo" class="divide-y divide-gray-200">
+                        <!-- Le righe verranno generate qui -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        let misurazioni = [
+            { id: 1, m: '', l: '' }
+        ];
+        let contatoreId = 2;
+
+        const inputClasse = document.getElementById('classeStrumento');
+        const inputE = document.getElementById('valoreE');
+        const inputVerifica = document.getElementById('tipoVerifica');
+        const tabellaCorpo = document.getElementById('tabellaCorpo');
+        const messaggioAvviso = document.getElementById('messaggioAvviso');
+
+        // Ascoltatori per ricalcolare quando cambiano i parametri generali
+        [inputClasse, inputE, inputVerifica].forEach(el => {
+            el.addEventListener('input', function() {
+                // Anche per il campo "e" forziamo la trasformazione visiva da punto a virgola
+                if (this.id === 'valoreE') {
+                    let cursor = this.selectionStart;
+                    if (this.value.includes('.')) {
+                        this.value = this.value.replace(/\./g, ',');
+                        this.setSelectionRange(cursor, cursor);
+                    }
+                }
+                ricalcolaTutteLeRighe();
+            });
+        });
+
+        function ottieniLimiti(classe) {
+            switch(parseInt(classe)) {
+                case 1: return { lim1: 50000, lim2: 200000 };
+                case 2: return { lim1: 5000, lim2: 20000 };
+                case 3: return { lim1: 500, lim2: 2000 };
+                case 4: return { lim1: 50, lim2: 200 };
+                default: return { lim1: 500, lim2: 2000 };
+            }
+        }
+
+        function getNumeroDaTesto(testo) {
+            if (!testo) return NaN;
+            // Sostituisce la virgola con il punto per i calcoli di JS
+            const formattato = testo.replace(',', '.');
+            return parseFloat(formattato);
+        }
+
+        function formattaRisultato(numero) {
+            // Riformatta il punto in virgola per l'utente, eliminando zeri inutili
+            return numero.toFixed(4).replace(/\.?0+$/, '').replace('.', ',');
+        }
+
+        function aggiornaRisultatiRiga(idRiga) {
+            const rigaEl = document.getElementById(`riga-${idRiga}`);
+            if (!rigaEl) return;
+
+            const mis = misurazioni.find(m => m.id === idRiga);
+            
+            const cellaErrore = rigaEl.querySelector('.cella-errore');
+            const cellaEmp = rigaEl.querySelector('.cella-emp');
+            const cellaEsito = rigaEl.querySelector('.cella-esito');
+
+            const eVal = getNumeroDaTesto(inputE.value);
+            const classe = inputClasse.value;
+            const moltiplicatore = parseFloat(inputVerifica.value);
+
+            // Controllo validità di 'e'
+            if (isNaN(eVal) || eVal <= 0) {
+                cellaErrore.innerHTML = '-';
+                cellaEmp.innerHTML = '-';
+                cellaEsito.innerHTML = `<span class="bg-gray-100 text-gray-500 text-xs font-medium px-2.5 py-1 rounded">In attesa di 'e'</span>`;
+                messaggioAvviso.classList.remove('hidden');
+                return;
+            }
+            
+            messaggioAvviso.classList.add('hidden');
+            const limiti = ottieniLimiti(classe);
+
+            const mVal = getNumeroDaTesto(mis.m);
+            const lVal = getNumeroDaTesto(mis.l);
+
+            if (!isNaN(mVal) && !isNaN(lVal)) {
+                // Calcoli DM 93/2017
+                const m_in_e = mVal / eVal;
+                let emp_base = 0;
+                
+                if (m_in_e <= limiti.lim1) emp_base = 0.5 * eVal;
+                else if (m_in_e <= limiti.lim2) emp_base = 1.0 * eVal;
+                else emp_base = 1.5 * eVal;
+
+                const emp_finale = emp_base * moltiplicatore;
+                const errore = lVal - mVal;
+
+                // Mostriamo i risultati usando la virgola
+                cellaErrore.innerHTML = formattaRisultato(errore);
+                cellaEmp.innerHTML = `&plusmn; ${formattaRisultato(emp_finale)}`;
+
+                // Verifica tolleranza (con piccolissimo margine per arrotondamenti macchina)
+                if (Math.abs(errore) <= Math.abs(emp_finale) + 0.000001) {
+                    cellaEsito.innerHTML = `<span class="bg-green-100 text-green-800 text-xs font-bold px-2.5 py-1 rounded border border-green-200">✅ CONFORME</span>`;
+                } else {
+                    cellaEsito.innerHTML = `<span class="bg-red-100 text-red-800 text-xs font-bold px-2.5 py-1 rounded border border-red-200">❌ NON CONFORME</span>`;
+                }
+            } else {
+                cellaErrore.innerHTML = '-';
+                cellaEmp.innerHTML = '-';
+                cellaEsito.innerHTML = `<span class="bg-gray-100 text-gray-500 text-xs font-medium px-2.5 py-1 rounded">In attesa dati</span>`;
+            }
+        }
+
+        function ricalcolaTutteLeRighe() {
+            misurazioni.forEach(mis => aggiornaRisultatiRiga(mis.id));
+        }
+
+        function gestisciInput(id, campo, elemento) {
+            // Salviamo la posizione del cursore per evitare che salti a fine riga
+            let cursorPos = elemento.selectionStart;
+            
+            // Se nel testo c'è un punto, lo convertiamo in virgola
+            if (elemento.value.includes('.')) {
+                elemento.value = elemento.value.replace(/\./g, ',');
+                // Rimettiamo il cursore dove stava
+                elemento.setSelectionRange(cursorPos, cursorPos);
+            }
+            
+            // Aggiorniamo la memoria del programma
+            const riga = misurazioni.find(m => m.id === id);
+            if (riga) {
+                riga[campo] = elemento.value;
+                aggiornaRisultatiRiga(id); // Calcoliamo senza ridisegnare la tabella
+            }
+        }
+
+        function disegnaTabellaIntera() {
+            tabellaCorpo.innerHTML = '';
+            
+            misurazioni.forEach((mis, index) => {
+                const tr = document.createElement('tr');
+                tr.id = `riga-${mis.id}`;
+                tr.className = "bg-white hover:bg-blue-50/50 transition-colors";
+                
+                tr.innerHTML = `
+                    <td class="px-4 py-2 text-center text-gray-400 font-medium">${index + 1}</td>
+                    <td class="px-2 py-2">
+                        <input type="text" inputmode="decimal" class="w-full bg-white border border-gray-300 text-gray-900 text-sm rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2.5 transition-shadow" placeholder="0,0" value="${mis.m}" oninput="gestisciInput(${mis.id}, 'm', this)">
+                    </td>
+                    <td class="px-2 py-2">
+                        <input type="text" inputmode="decimal" class="w-full bg-white border border-gray-300 text-gray-900 text-sm rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2.5 transition-shadow" placeholder="0,0" value="${mis.l}" oninput="gestisciInput(${mis.id}, 'l', this)">
+                    </td>
+                    <td class="px-4 py-2 font-mono text-gray-700 font-medium cella-errore">-</td>
+                    <td class="px-4 py-2 font-mono text-gray-600 text-sm cella-emp">-</td>
+                    <td class="px-4 py-2 whitespace-nowrap cella-esito"></td>
+                    <td class="px-2 py-2 text-center">
+                        <button onclick="rimuoviRiga(${mis.id})" class="text-gray-400 hover:text-red-600 hover:bg-red-50 p-2 rounded-full transition-all" title="Rimuovi riga">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </td>
+                `;
+                tabellaCorpo.appendChild(tr);
+                
+                // Calcola i risultati per la riga
+                aggiornaRisultatiRiga(mis.id);
+            });
+        }
+
+        window.aggiungiRiga = function() {
+            misurazioni.push({ id: contatoreId++, m: '', l: '' });
+            disegnaTabellaIntera();
+        }
+
+        window.rimuoviRiga = function(id) {
+            if (misurazioni.length === 1) {
+                misurazioni[0] = { id: contatoreId++, m: '', l: '' };
+            } else {
+                misurazioni = misurazioni.filter(m => m.id !== id);
+            }
+            disegnaTabellaIntera();
+        }
+
+        tabellaCorpo.addEventListener('paste', function(e) {
+            const pasteData = (e.clipboardData || window.clipboardData).getData('text');
+            
+            // Se stiamo incollando dati multipli (con tabulazioni o a capo)
+            if (pasteData.includes('\t') || pasteData.includes('\n')) {
+                e.preventDefault(); 
+                const righe = pasteData.trim().split(/\r?\n/);
+                let datiAggiunti = false;
+
+                // Tieni le righe vecchie solo se hanno già dei dati
+                let nuoveMisurazioni = misurazioni.filter(m => m.m !== '' || m.l !== '');
+
+                righe.forEach(riga => {
+                    const colonne = riga.split(/\t/); 
+                    if (colonne.length > 0) {
+                        // Sostituisco i punti in virgole fin dal copia-incolla per uniformità visiva
+                        let mVal = (colonne[0] || '').replace(/\./g, ',').trim();
+                        let lVal = (colonne[1] || '').replace(/\./g, ',').trim();
+                        
+                        if(mVal !== '' || lVal !== '') {
+                            nuoveMisurazioni.push({ id: contatoreId++, m: mVal, l: lVal });
+                            datiAggiunti = true;
+                        }
+                    }
+                });
+
+                if (datiAggiunti) {
+                    misurazioni = nuoveMisurazioni;
+                    if (misurazioni.length === 0) misurazioni.push({ id: contatoreId++, m: '', l: '' });
+                    
+                    disegnaTabellaIntera();
+                }
+            }
+        });
+
+        disegnaTabellaIntera();
+
+        const PWA_MANIFEST = {
+            "name": "Calcolatore EMP NAWI",
+            "short_name": "EMP NAWI",
+            "start_url": ".",
+            "display": "standalone",
+            "background_color": "#f3f4f6",
+            "theme_color": "#ffffff",
+            "description": "Controllo dell'Errore Massimo Tollerato per strumenti per pesare (DM 93/2017)",
+            "icons": [
+                {
+                    "src": "https://placehold.co/192x192/1e3a8a/ffffff?text=NAWI",
+                    "sizes": "192x192",
+                    "type": "image/png"
+                },
+                {
+                    "src": "https://placehold.co/512x512/1e3a8a/ffffff?text=NAWI",
+                    "sizes": "512x512",
+                    "type": "image/png"
+                }
+            ]
+        };
+
+        const manifestBlob = new Blob([JSON.stringify(PWA_MANIFEST)], {type: 'application/json'});
+        const manifestUrl = URL.createObjectURL(manifestBlob);
+        document.getElementById('manifest-link').setAttribute('href', manifestUrl);
+
+        const swCode = `
+            self.addEventListener('install', (e) => { self.skipWaiting(); });
+            self.addEventListener('activate', (e) => { self.clients.claim(); });
+            self.addEventListener('fetch', (e) => { });
+        `;
+        const swBlob = new Blob([swCode], {type: 'application/javascript'});
+        const swUrl = URL.createObjectURL(swBlob);
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register(swUrl).catch(() => {});
+        }
+    </script>
+</body>
+</html>
