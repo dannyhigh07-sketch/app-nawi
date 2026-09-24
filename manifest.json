@@ -1,7 +1,7 @@
 {
   "name": "Controllo EMP NAWI",
   "short_name": "EMP NAWI",
-  "description": "Strumento di controllo dell'Errore Massimo Tollerato per strumenti NAWI (D.M. 21 aprile 2017, n. 93)",
+  "description": "Strumento di controllo dell'Errore Massimo Tollerato per strumenti NAWI (D.M. 93/2017)",
   "start_url": "/app-nawi/index.html",
   "scope": "/app-nawi/",
   "display": "standalone",
@@ -10,7 +10,7 @@
   "icons": [
     {
       "src": "marchio-cdc-monte-rosa-laghi-alto-piemonte-rgb.png",
-      "sizes": "512x512",
+      "sizes": "192x192 512x512",
       "type": "image/png",
       "purpose": "any maskable"
     }
