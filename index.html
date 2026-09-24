@@ -1,358 +1,269 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Calcolatore EMP NAWI (DM 93/2017)</title>
-    
-    <meta name="theme-color" content="#ffffff">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="EMP NAWI">
-    <link id="manifest-link" rel="manifest" href="">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Controllo EMP NAWI - D.M. 93/2017</title>
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <style>
-        body {
-            background-color: #f3f4f6;
-            font-family: 'Inter', system-ui, sans-serif;
-            -webkit-user-select: none;
-            user-select: none;
-        }
-        input, select {
-            -webkit-user-select: auto;
-            user-select: auto;
-        }
-    </style>
+  <!-- Collegamento al Manifest ufficiale PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0284c7">
+  <link rel="icon" type="image/png" href="marchio-cdc-monte-rosa-laghi-alto-piemonte-rgb.png">
+
+  <!-- Tailwind CSS per lo stile grafico -->
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="text-gray-800 antialiased min-h-screen pb-20">
+<body class="bg-gray-100 text-gray-800 font-sans min-h-screen pb-12">
 
-    <header class="bg-white p-4 shadow-sm border-b border-gray-200 sticky top-0 z-10">
-        <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-            <img src="marchio-cdc-monte-rosa-laghi-alto-piemonte-rgb.png" alt="Logo Camera di Commercio" class="h-12 md:h-16 object-contain">
-            <h1 class="text-xl md:text-2xl font-bold text-blue-900 text-center md:text-right">Calcolatore EMP NAWI</h1>
+  <!-- INTESTAZIONE LOGO E TITOLO -->
+  <header class="bg-white border-b border-gray-200 shadow-sm py-4 px-6 mb-6">
+    <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      <img src="marchio-cdc-monte-rosa-laghi-alto-piemonte-rgb.png" 
+           alt="Camera di Commercio Monte Rosa Laghi Alto Piemonte" 
+           class="h-14 md:h-16 object-contain">
+      <div class="text-center md:text-right">
+        <h1 class="text-xl md:text-2xl font-bold text-gray-900">Controllo Metrologico NAWI</h1>
+        <p class="text-xs md:text-sm text-gray-500">Calcolo Errore Massimo Tollerato (D.M. 93/2017)</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 space-y-6">
+
+    <!-- SCHEDA 1: PARAMETRI STRUMENTO -->
+    <div class="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+      <h2 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">1. Parametri Strumento e Verifica</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Classe Metrologica</label>
+          <select id="classe" onchange="calcolaTutto()" class="w-full border border-gray-300 rounded-lg p-2.5 bg-gray-50 focus:ring-2 focus:ring-blue-500">
+            <option value="1">Classe I (Speciale)</option>
+            <option value="2">Classe II (Fine)</option>
+            <option value="3" selected>Classe III (Media)</option>
+            <option value="4">Classe IIII (Ordinaria)</option>
+          </select>
         </div>
-    </header>
 
-    <main class="max-w-5xl mx-auto p-4 space-y-6 mt-4">
-        
-        <section class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
-            <h2 class="text-lg font-semibold text-gray-700 mb-4 border-b pb-2">Parametri Generali</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div>
-                    <label class="block text-sm font-semibold text-gray-600 mb-2">Classe Strumento</label>
-                    <select id="classeStrumento" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block p-3 transition-shadow">
-                        <option value="1">Classe I (Speciale)</option>
-                        <option value="2">Classe II (Fina)</option>
-                        <option value="3" selected>Classe III (Media)</option>
-                        <option value="4">Classe IIII (Ordinaria)</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-600 mb-2">Divisione di verifica (e)</label>
-                    <!-- Qui manteniamo inputmode="decimal" per la tastiera numerica e facciamo in modo di accettare la virgola -->
-                    <input type="text" inputmode="decimal" id="valoreE" placeholder="es. 0,01" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block p-3 transition-shadow" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-600 mb-2">Tipo di verifica</label>
-                    <select id="tipoVerifica" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block p-3 transition-shadow">
-                        <option value="1">Verifica prima (x1)</option>
-                        <option value="2" selected>Verifica periodica (x2)</option>
-                        <option value="3">Controllo casuale (x3)</option>
-                    </select>
-                </div>
-            </div>
-            
-            <div id="messaggioAvviso" class="hidden mt-4 p-4 text-sm text-yellow-800 rounded-lg bg-yellow-100 border border-yellow-200" role="alert">
-                <span class="font-bold">Attenzione:</span> Inserisci un valore valido per la divisione "e" per visualizzare l'esito dei calcoli.
-            </div>
-        </section>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Divisione di verifica (e)</label>
+          <input type="text" id="div_e" inputmode="decimal" placeholder="Es. 0,1 o 1" oninput="gestisciInputPunto(this); calcolaTutto()" class="w-full border border-gray-300 rounded-lg p-2.5 bg-gray-50 focus:ring-2 focus:ring-blue-500">
+        </div>
 
-        <section class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 border-b pb-4 gap-4">
-                <div>
-                    <h2 class="text-lg font-semibold text-gray-700">Misurazioni</h2>
-                    <p class="text-sm text-gray-500 mt-1">Digita i valori oppure incolla (Ctrl+V) le colonne da Excel.</p>
-                </div>
-                <button onclick="aggiungiRiga()" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-5 rounded-lg transition-colors shadow-sm active:scale-95 flex items-center justify-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                    Aggiungi Riga
-                </button>
-            </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Tipo di Verifica</label>
+          <select id="tipoVerifica" onchange="calcolaTutto()" class="w-full border border-gray-300 rounded-lg p-2.5 bg-gray-50 focus:ring-2 focus:ring-blue-500">
+            <option value="1">1 - Verifica Prima (Molt. x1)</option>
+            <option value="2">2 - Verifica Periodica (Molt. x2)</option>
+            <option value="3" selected>3 - Controlli casuali / richiesta (Molt. x3)</option>
+          </select>
+        </div>
+      </div>
+    </div>
 
-            <div class="overflow-x-auto rounded-lg border border-gray-200">
-                <table class="w-full text-sm text-left text-gray-600">
-                    <thead class="text-xs text-gray-700 uppercase bg-gray-100">
-                        <tr>
-                            <th scope="col" class="px-4 py-3 w-12 text-center">N.</th>
-                            <th scope="col" class="px-4 py-3 min-w-[120px]">Carico (m)</th>
-                            <th scope="col" class="px-4 py-3 min-w-[120px]">Lettura (L)</th>
-                            <th scope="col" class="px-4 py-3 min-w-[100px]">Errore (E)</th>
-                            <th scope="col" class="px-4 py-3 min-w-[100px]">EMP App.</th>
-                            <th scope="col" class="px-4 py-3 min-w-[130px]">Esito</th>
-                            <th scope="col" class="px-2 py-3 w-12 text-center"></th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabellaCorpo" class="divide-y divide-gray-200">
-                        <!-- Le righe verranno generate qui -->
-                    </tbody>
-                </table>
-            </div>
-        </section>
-    </main>
+    <!-- SCHEDA 2: TABELLA PESATE -->
+    <div class="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+      <div class="flex justify-between items-center border-b pb-2 mb-4">
+        <h2 class="text-lg font-semibold text-gray-800">2. Misure di Pesata</h2>
+        <button onclick="aggiungiRiga()" class="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition">
+          + Aggiungi Pesata
+        </button>
+      </div>
 
-    <script>
-        let misurazioni = [
-            { id: 1, m: '', l: '' }
-        ];
-        let contatoreId = 2;
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider border-b">
+              <th class="p-3 w-12 text-center">N.</th>
+              <th class="p-3">Carico m (g/kg)</th>
+              <th class="p-3">Lettura L (g/kg)</th>
+              <th class="p-3">Errore E (L - m)</th>
+              <th class="p-3">EMP Tollerato</th>
+              <th class="p-3 text-center">Esito</th>
+              <th class="p-3 w-12 text-center">Azione</th>
+            </tr>
+          </thead>
+          <tbody id="tabellaBody">
+            <!-- Le righe verranno generate qui -->
+          </tbody>
+        </table>
+      </div>
+    </div>
 
-        const inputClasse = document.getElementById('classeStrumento');
-        const inputE = document.getElementById('valoreE');
-        const inputVerifica = document.getElementById('tipoVerifica');
-        const tabellaCorpo = document.getElementById('tabellaCorpo');
-        const messaggioAvviso = document.getElementById('messaggioAvviso');
+  </main>
 
-        // Ascoltatori per ricalcolare quando cambiano i parametri generali
-        [inputClasse, inputE, inputVerifica].forEach(el => {
-            el.addEventListener('input', function() {
-                // Anche per il campo "e" forziamo la trasformazione visiva da punto a virgola
-                if (this.id === 'valoreE') {
-                    let cursor = this.selectionStart;
-                    if (this.value.includes('.')) {
-                        this.value = this.value.replace(/\./g, ',');
-                        this.setSelectionRange(cursor, cursor);
-                    }
-                }
-                ricalcolaTutteLeRighe();
-            });
+  <script>
+    let conteggioRighe = 0;
+
+    // Convertitore automatico da punto a virgola in scrittura
+    function gestisciInputPunto(input) {
+      let pos = input.selectionStart;
+      let valIniziale = input.value;
+      let valNuovo = valIniziale.replace('.', ',');
+      if (valIniziale !== valNuovo) {
+        input.value = valNuovo;
+        input.setSelectionRange(pos, pos);
+      }
+    }
+
+    function gestisciIncolla(event, inputIniziale) {
+      let clipboardData = (event.clipboardData || window.clipboardData).getData('text');
+      if (!clipboardData) return;
+
+      let righePasted = clipboardData.trim().split(/\r\n|\r|\n/);
+      if (righePasted.length > 0 && righePasted[0].includes('\t')) {
+        event.preventDefault();
+        let rigaCorrente = inputIniziale.closest('tr');
+
+        righePasted.forEach((testoRiga) => {
+          let valori = testoRiga.split('\t');
+          if (!rigaCorrente) {
+            rigaCorrente = aggiungiRiga();
+          }
+
+          let inputM = rigaCorrente.querySelector('.m-val');
+          let inputL = rigaCorrente.querySelector('.l-val');
+
+          if (valori[0] !== undefined && inputM) inputM.value = valori[0].trim().replace('.', ',');
+          if (valori[1] !== undefined && inputL) inputL.value = valori[1].trim().replace('.', ',');
+
+          calcolaRiga(rigaCorrente);
+          rigaCorrente = rigaCorrente.nextElementSibling;
         });
+      }
+    }
 
-        function ottieniLimiti(classe) {
-            switch(parseInt(classe)) {
-                case 1: return { lim1: 50000, lim2: 200000 };
-                case 2: return { lim1: 5000, lim2: 20000 };
-                case 3: return { lim1: 500, lim2: 2000 };
-                case 4: return { lim1: 50, lim2: 200 };
-                default: return { lim1: 500, lim2: 2000 };
-            }
-        }
+    function aggiungiRiga(valM = '', valL = '') {
+      conteggioRighe++;
+      const tbody = document.getElementById('tabellaBody');
+      const tr = document.createElement('tr');
+      tr.className = "border-b border-gray-100 hover:bg-gray-50 transition";
+      tr.id = `riga-${conteggioRighe}`;
 
-        function getNumeroDaTesto(testo) {
-            if (!testo) return NaN;
-            // Sostituisce la virgola con il punto per i calcoli di JS
-            const formattato = testo.replace(',', '.');
-            return parseFloat(formattato);
-        }
+      tr.innerHTML = `
+        <td class="p-3 text-center text-sm text-gray-500 font-medium num-riga"></td>
+        <td class="p-3">
+          <input type="text" inputmode="decimal" value="${valM}" placeholder="0,0"
+                 onpaste="gestisciIncolla(event, this)"
+                 oninput="gestisciInputPunto(this); calcolaRiga(this.closest('tr'))" 
+                 class="m-val w-full border border-gray-300 rounded px-2.5 py-1.5 text-sm focus:ring-1 focus:ring-blue-500">
+        </td>
+        <td class="p-3">
+          <input type="text" inputmode="decimal" value="${valL}" placeholder="0,0"
+                 onpaste="gestisciIncolla(event, this)"
+                 oninput="gestisciInputPunto(this); calcolaRiga(this.closest('tr'))" 
+                 class="l-val w-full border border-gray-300 rounded px-2.5 py-1.5 text-sm focus:ring-1 focus:ring-blue-500">
+        </td>
+        <td class="p-3 text-sm font-semibold err-val text-gray-600">-</td>
+        <td class="p-3 text-sm text-gray-600 emp-val">-</td>
+        <td class="p-3 text-center esito-val">-</td>
+        <td class="p-3 text-center">
+          <button onclick="rimuoviRiga(this)" class="text-red-500 hover:text-red-700 font-bold text-lg">&times;</button>
+        </td>
+      `;
 
-        function formattaRisultato(numero) {
-            // Riformatta il punto in virgola per l'utente, eliminando zeri inutili
-            return numero.toFixed(4).replace(/\.?0+$/, '').replace('.', ',');
-        }
+      tbody.appendChild(tr);
+      aggiornaNumerazione();
+      if (valM || valL) calcolaRiga(tr);
+      return tr;
+    }
 
-        function aggiornaRisultatiRiga(idRiga) {
-            const rigaEl = document.getElementById(`riga-${idRiga}`);
-            if (!rigaEl) return;
+    function rimuoviRiga(btn) {
+      btn.closest('tr').remove();
+      aggiornaNumerazione();
+    }
 
-            const mis = misurazioni.find(m => m.id === idRiga);
-            
-            const cellaErrore = rigaEl.querySelector('.cella-errore');
-            const cellaEmp = rigaEl.querySelector('.cella-emp');
-            const cellaEsito = rigaEl.querySelector('.cella-esito');
+    function aggiornaNumerazione() {
+      const righe = document.querySelectorAll('#tabellaBody tr');
+      righe.forEach((riga, index) => {
+        riga.querySelector('.num-riga').innerText = index + 1;
+      });
+    }
 
-            const eVal = getNumeroDaTesto(inputE.value);
-            const classe = inputClasse.value;
-            const moltiplicatore = parseFloat(inputVerifica.value);
+    function calcolaEMPBase(m, e, classe) {
+      const n = m / e;
+      if (classe === 1) {
+        if (n <= 50000) return 0.5 * e;
+        if (n <= 200000) return 1.0 * e;
+        return 1.5 * e;
+      } else if (classe === 2) {
+        if (n <= 5000) return 0.5 * e;
+        if (n <= 20000) return 1.0 * e;
+        return 1.5 * e;
+      } else if (classe === 3) {
+        if (n <= 500) return 0.5 * e;
+        if (n <= 2000) return 1.0 * e;
+        return 1.5 * e;
+      } else if (classe === 4) {
+        if (n <= 50) return 0.5 * e;
+        if (n <= 200) return 1.0 * e;
+        return 1.5 * e;
+      }
+      return 0;
+    }
 
-            // Controllo validità di 'e'
-            if (isNaN(eVal) || eVal <= 0) {
-                cellaErrore.innerHTML = '-';
-                cellaEmp.innerHTML = '-';
-                cellaEsito.innerHTML = `<span class="bg-gray-100 text-gray-500 text-xs font-medium px-2.5 py-1 rounded">In attesa di 'e'</span>`;
-                messaggioAvviso.classList.remove('hidden');
-                return;
-            }
-            
-            messaggioAvviso.classList.add('hidden');
-            const limiti = ottieniLimiti(classe);
+    function calcolaRiga(riga) {
+      const classe = parseInt(document.getElementById('classe').value);
+      const divEInput = document.getElementById('div_e').value.replace(',', '.');
+      const e = parseFloat(divEInput);
 
-            const mVal = getNumeroDaTesto(mis.m);
-            const lVal = getNumeroDaTesto(mis.l);
+      const valM = riga.querySelector('.m-val').value.replace(',', '.');
+      const valL = riga.querySelector('.l-val').value.replace(',', '.');
 
-            if (!isNaN(mVal) && !isNaN(lVal)) {
-                // Calcoli DM 93/2017
-                const m_in_e = mVal / eVal;
-                let emp_base = 0;
-                
-                if (m_in_e <= limiti.lim1) emp_base = 0.5 * eVal;
-                else if (m_in_e <= limiti.lim2) emp_base = 1.0 * eVal;
-                else emp_base = 1.5 * eVal;
+      const m = parseFloat(valM);
+      const l = parseFloat(valL);
 
-                const emp_finale = emp_base * moltiplicatore;
-                const errore = lVal - mVal;
+      const cellaErr = riga.querySelector('.err-val');
+      const cellaEmp = riga.querySelector('.emp-val');
+      const cellaEsito = riga.querySelector('.esito-val');
 
-                // Mostriamo i risultati usando la virgola
-                cellaErrore.innerHTML = formattaRisultato(errore);
-                cellaEmp.innerHTML = `&plusmn; ${formattaRisultato(emp_finale)}`;
+      if (isNaN(e) || e <= 0 || isNaN(m) || isNaN(l)) {
+        cellaErr.innerText = '-';
+        cellaEmp.innerText = '-';
+        cellaEsito.innerHTML = '-';
+        return;
+      }
 
-                // Verifica tolleranza (con piccolissimo margine per arrotondamenti macchina)
-                if (Math.abs(errore) <= Math.abs(emp_finale) + 0.000001) {
-                    cellaEsito.innerHTML = `<span class="bg-green-100 text-green-800 text-xs font-bold px-2.5 py-1 rounded border border-green-200">✅ CONFORME</span>`;
-                } else {
-                    cellaEsito.innerHTML = `<span class="bg-red-100 text-red-800 text-xs font-bold px-2.5 py-1 rounded border border-red-200">❌ NON CONFORME</span>`;
-                }
-            } else {
-                cellaErrore.innerHTML = '-';
-                cellaEmp.innerHTML = '-';
-                cellaEsito.innerHTML = `<span class="bg-gray-100 text-gray-500 text-xs font-medium px-2.5 py-1 rounded">In attesa dati</span>`;
-            }
-        }
+      const errore = l - m;
+      const tipoVerifica = parseInt(document.getElementById('tipoVerifica').value);
+      const moltiplicatore = tipoVerifica === 1 ? 1 : (tipoVerifica === 2 ? 2 : 3);
+      
+      const empBase = calcolaEMPBase(m, e, classe);
+      const empFinale = empBase * moltiplicatore;
 
-        function ricalcolaTutteLeRighe() {
-            misurazioni.forEach(mis => aggiornaRisultatiRiga(mis.id));
-        }
+      const erroreAssoluto = Math.abs(errore);
+      const conforme = erroreAssoluto <= (empFinale + 0.0000001);
 
-        function gestisciInput(id, campo, elemento) {
-            // Salviamo la posizione del cursore per evitare che salti a fine riga
-            let cursorPos = elemento.selectionStart;
-            
-            // Se nel testo c'è un punto, lo convertiamo in virgola
-            if (elemento.value.includes('.')) {
-                elemento.value = elemento.value.replace(/\./g, ',');
-                // Rimettiamo il cursore dove stava
-                elemento.setSelectionRange(cursorPos, cursorPos);
-            }
-            
-            // Aggiorniamo la memoria del programma
-            const riga = misurazioni.find(m => m.id === id);
-            if (riga) {
-                riga[campo] = elemento.value;
-                aggiornaRisultatiRiga(id); // Calcoliamo senza ridisegnare la tabella
-            }
-        }
+      const formattatore = new Intl.NumberFormat('it-IT', { maximumFractionDigits: 5 });
 
-        function disegnaTabellaIntera() {
-            tabellaCorpo.innerHTML = '';
-            
-            misurazioni.forEach((mis, index) => {
-                const tr = document.createElement('tr');
-                tr.id = `riga-${mis.id}`;
-                tr.className = "bg-white hover:bg-blue-50/50 transition-colors";
-                
-                tr.innerHTML = `
-                    <td class="px-4 py-2 text-center text-gray-400 font-medium">${index + 1}</td>
-                    <td class="px-2 py-2">
-                        <input type="text" inputmode="decimal" class="w-full bg-white border border-gray-300 text-gray-900 text-sm rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2.5 transition-shadow" placeholder="0,0" value="${mis.m}" oninput="gestisciInput(${mis.id}, 'm', this)">
-                    </td>
-                    <td class="px-2 py-2">
-                        <input type="text" inputmode="decimal" class="w-full bg-white border border-gray-300 text-gray-900 text-sm rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2.5 transition-shadow" placeholder="0,0" value="${mis.l}" oninput="gestisciInput(${mis.id}, 'l', this)">
-                    </td>
-                    <td class="px-4 py-2 font-mono text-gray-700 font-medium cella-errore">-</td>
-                    <td class="px-4 py-2 font-mono text-gray-600 text-sm cella-emp">-</td>
-                    <td class="px-4 py-2 whitespace-nowrap cella-esito"></td>
-                    <td class="px-2 py-2 text-center">
-                        <button onclick="rimuoviRiga(${mis.id})" class="text-gray-400 hover:text-red-600 hover:bg-red-50 p-2 rounded-full transition-all" title="Rimuovi riga">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        </button>
-                    </td>
-                `;
-                tabellaCorpo.appendChild(tr);
-                
-                // Calcola i risultati per la riga
-                aggiornaRisultatiRiga(mis.id);
-            });
-        }
+      cellaErr.innerText = formattatore.format(errore);
+      cellaEmp.innerText = `±${formattatore.format(empFinale)}`;
 
-        window.aggiungiRiga = function() {
-            misurazioni.push({ id: contatoreId++, m: '', l: '' });
-            disegnaTabellaIntera();
-        }
+      if (conforme) {
+        cellaEsito.innerHTML = `<span class="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-1 rounded-full">CONFORME</span>`;
+      } else {
+        cellaEsito.innerHTML = `<span class="bg-red-100 text-red-800 text-xs font-semibold px-2.5 py-1 rounded-full">NON CONFORME</span>`;
+      }
+    }
 
-        window.rimuoviRiga = function(id) {
-            if (misurazioni.length === 1) {
-                misurazioni[0] = { id: contatoreId++, m: '', l: '' };
-            } else {
-                misurazioni = misurazioni.filter(m => m.id !== id);
-            }
-            disegnaTabellaIntera();
-        }
+    function calcolaTutto() {
+      const righe = document.querySelectorAll('#tabellaBody tr');
+      righe.forEach(riga => calcolaRiga(riga));
+    }
 
-        tabellaCorpo.addEventListener('paste', function(e) {
-            const pasteData = (e.clipboardData || window.clipboardData).getData('text');
-            
-            // Se stiamo incollando dati multipli (con tabulazioni o a capo)
-            if (pasteData.includes('\t') || pasteData.includes('\n')) {
-                e.preventDefault(); 
-                const righe = pasteData.trim().split(/\r?\n/);
-                let datiAggiunti = false;
+    // Registrazione del Service Worker ufficiale
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .then(reg => console.log('Service Worker Registrato:', reg))
+          .catch(err => console.log('Errore SW:', err));
+      });
+    }
 
-                // Tieni le righe vecchie solo se hanno già dei dati
-                let nuoveMisurazioni = misurazioni.filter(m => m.m !== '' || m.l !== '');
-
-                righe.forEach(riga => {
-                    const colonne = riga.split(/\t/); 
-                    if (colonne.length > 0) {
-                        // Sostituisco i punti in virgole fin dal copia-incolla per uniformità visiva
-                        let mVal = (colonne[0] || '').replace(/\./g, ',').trim();
-                        let lVal = (colonne[1] || '').replace(/\./g, ',').trim();
-                        
-                        if(mVal !== '' || lVal !== '') {
-                            nuoveMisurazioni.push({ id: contatoreId++, m: mVal, l: lVal });
-                            datiAggiunti = true;
-                        }
-                    }
-                });
-
-                if (datiAggiunti) {
-                    misurazioni = nuoveMisurazioni;
-                    if (misurazioni.length === 0) misurazioni.push({ id: contatoreId++, m: '', l: '' });
-                    
-                    disegnaTabellaIntera();
-                }
-            }
-        });
-
-        disegnaTabellaIntera();
-
-        const PWA_MANIFEST = {
-            "name": "Calcolatore EMP NAWI",
-            "short_name": "EMP NAWI",
-            "start_url": ".",
-            "display": "standalone",
-            "background_color": "#f3f4f6",
-            "theme_color": "#ffffff",
-            "description": "Controllo dell'Errore Massimo Tollerato per strumenti per pesare (DM 93/2017)",
-            "icons": [
-                {
-                    "src": "https://placehold.co/192x192/1e3a8a/ffffff?text=NAWI",
-                    "sizes": "192x192",
-                    "type": "image/png"
-                },
-                {
-                    "src": "https://placehold.co/512x512/1e3a8a/ffffff?text=NAWI",
-                    "sizes": "512x512",
-                    "type": "image/png"
-                }
-            ]
-        };
-
-        const manifestBlob = new Blob([JSON.stringify(PWA_MANIFEST)], {type: 'application/json'});
-        const manifestUrl = URL.createObjectURL(manifestBlob);
-        document.getElementById('manifest-link').setAttribute('href', manifestUrl);
-
-        const swCode = `
-            self.addEventListener('install', (e) => { self.skipWaiting(); });
-            self.addEventListener('activate', (e) => { self.clients.claim(); });
-            self.addEventListener('fetch', (e) => { });
-        `;
-        const swBlob = new Blob([swCode], {type: 'application/javascript'});
-        const swUrl = URL.createObjectURL(swBlob);
-
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register(swUrl).catch(() => {});
-        }
-    </script>
+    // Inizializza con 3 righe vuote
+    window.onload = () => {
+      for (let i = 0; i < 3; i++) aggiungiRiga();
+    };
+  </script>
 </body>
 </html>
