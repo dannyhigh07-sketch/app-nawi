@@ -1,269 +1,379 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Controllo EMP NAWI - D.M. 93/2017</title>
-
-  <!-- Collegamento al Manifest ufficiale PWA -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#0284c7">
-  <link rel="icon" type="image/png" href="marchio-cdc-monte-rosa-laghi-alto-piemonte-rgb.png">
-
-  <!-- Tailwind CSS per lo stile grafico -->
-  <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Controllo EMP NAWI - D.M. 93/2017</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0284c7">
+<link rel="icon" type="image/png" href="marchio-cdc-monte-rosa-laghi-alto-piemonte-rgb.png">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f3f4f6;color:#1f2937;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh;padding-bottom:3rem}
+header{background:#fff;border-bottom:1px solid #e5e7eb;box-shadow:0 1px 2px rgba(0,0,0,.05);padding:1rem 1.5rem;margin-bottom:1.5rem}
+.wrap{max-width:64rem;margin:0 auto}
+.head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem}
+.head img{height:3.5rem;max-width:100%;object-fit:contain}
+.head h1{margin:0;font-size:1.4rem;color:#111827}
+.head p{margin:.2rem 0 0;font-size:.8rem;color:#6b7280}
+.tit{text-align:right}
+main{max-width:64rem;margin:0 auto;padding:0 1rem}
+.card{background:#fff;border:1px solid #f3f4f6;border-radius:.75rem;box-shadow:0 4px 8px rgba(0,0,0,.07);padding:1.5rem;margin-bottom:1.5rem}
+h2{font-size:1.1rem;margin:0 0 1rem;padding-bottom:.5rem;border-bottom:1px solid #e5e7eb;color:#1f2937}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:1rem}
+label{display:block;font-size:.85rem;font-weight:500;margin-bottom:.25rem;color:#374151}
+select,input{width:100%;font:inherit;font-size:.95rem;border:1px solid #d1d5db;border-radius:.5rem;padding:.6rem;background:#f9fafb;color:inherit}
+td input{font-size:.9rem;padding:.4rem .5rem;border-radius:.35rem}
+select:focus,input:focus,button:focus-visible{outline:2px solid #0284c7;outline-offset:1px}
+input.bad{border-color:#dc2626;background:#fef2f2}
+.hint{font-size:.75rem;color:#6b7280;margin:.3rem 0 0}
+.bar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:.5rem;border-bottom:1px solid #e5e7eb;padding-bottom:.5rem;margin-bottom:1rem}
+.bar h2{border:0;margin:0;padding:0}
+.btns{display:flex;flex-wrap:wrap;gap:.5rem}
+button{font:inherit;font-size:.85rem;font-weight:500;border:0;border-radius:.5rem;padding:.5rem 1rem;cursor:pointer;background:#0284c7;color:#fff}
+button:hover{background:#0369a1}
+button.sec{background:#e5e7eb;color:#374151}
+button.sec:hover{background:#d1d5db}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;text-align:left}
+th{background:#f9fafb;color:#4b5563;font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;padding:.75rem;border-bottom:1px solid #e5e7eb}
+td{padding:.6rem .75rem;border-bottom:1px solid #f3f4f6;font-size:.9rem;color:#4b5563}
+tbody tr:hover{background:#f9fafb}
+.c{text-align:center}
+.err{font-weight:600}
+.badge{display:inline-block;font-size:.72rem;font-weight:600;padding:.25rem .65rem;border-radius:999px;white-space:nowrap}
+.ok{background:#dcfce7;color:#166534}
+.ko{background:#fee2e2;color:#991b1b}
+.inv{background:#fef3c7;color:#92400e}
+.del{background:none;color:#ef4444;font-size:1.2rem;font-weight:700;padding:.1rem .5rem}
+.del:hover{background:none;color:#b91c1c}
+#sintesi{border-radius:.5rem;padding:.9rem 1rem;font-weight:600;background:#f3f4f6;color:#4b5563}
+#sintesi.ok{background:#dcfce7;color:#166534}
+#sintesi.ko{background:#fee2e2;color:#991b1b}
+#sintesi.inv{background:#fef3c7;color:#92400e}
+.note{font-size:.75rem;color:#6b7280;text-align:center;margin:1rem 0 0}
+.pr{display:none}
+@media print{
+ body{background:#fff;padding:0}
+ header{box-shadow:none}
+ .card{box-shadow:none;border:1px solid #d1d5db;break-inside:avoid}
+ .btns,.noprint{display:none!important}
+ .pr{display:block;font-size:.85rem;color:#374151;margin-bottom:1rem}
+ input,select{border:0;background:none;padding:0;appearance:none}
+ .hint{display:none}
+}
+</style>
 </head>
-<body class="bg-gray-100 text-gray-800 font-sans min-h-screen pb-12">
+<body>
+<header>
+ <div class="wrap head">
+  <img src="marchio-cdc-monte-rosa-laghi-alto-piemonte-rgb.png" alt="Camera di Commercio Monte Rosa Laghi Alto Piemonte">
+  <div class="tit">
+   <h1>Controllo Metrologico NAWI</h1>
+   <p>Calcolo Errore Massimo Tollerato (D.M. 93/2017)</p>
+  </div>
+ </div>
+</header>
 
-  <!-- INTESTAZIONE LOGO E TITOLO -->
-  <header class="bg-white border-b border-gray-200 shadow-sm py-4 px-6 mb-6">
-    <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-      <img src="marchio-cdc-monte-rosa-laghi-alto-piemonte-rgb.png" 
-           alt="Camera di Commercio Monte Rosa Laghi Alto Piemonte" 
-           class="h-14 md:h-16 object-contain">
-      <div class="text-center md:text-right">
-        <h1 class="text-xl md:text-2xl font-bold text-gray-900">Controllo Metrologico NAWI</h1>
-        <p class="text-xs md:text-sm text-gray-500">Calcolo Errore Massimo Tollerato (D.M. 93/2017)</p>
-      </div>
-    </div>
-  </header>
+<main>
+ <p class="pr" id="dataStampa"></p>
 
-  <main class="max-w-5xl mx-auto px-4 space-y-6">
+ <section class="card">
+  <h2>1. Parametri Strumento e Verifica</h2>
+  <div class="grid">
+   <div>
+    <label for="classe">Classe Metrologica</label>
+    <select id="classe">
+     <option value="1">Classe I (Speciale)</option>
+     <option value="2">Classe II (Fine)</option>
+     <option value="3" selected>Classe III (Media)</option>
+     <option value="4">Classe IIII (Ordinaria)</option>
+    </select>
+   </div>
+   <div>
+    <label for="div_e">Divisione di verifica (e)</label>
+    <input type="text" id="div_e" inputmode="decimal" placeholder="Es. 0,1 o 1" autocomplete="off">
+    <p class="hint" id="hintE">Stessa unità di carichi e letture.</p>
+   </div>
+   <div>
+    <label for="unita">Unità di misura</label>
+    <select id="unita">
+     <option value="g" selected>g</option>
+     <option value="kg">kg</option>
+    </select>
+   </div>
+   <div>
+    <label for="tipoVerifica">Tipo di Verifica</label>
+    <select id="tipoVerifica">
+     <option value="1">1 - Verifica Prima (Molt. x1)</option>
+     <option value="2">2 - Verifica Periodica (Molt. x2)</option>
+     <option value="3" selected>3 - Controlli casuali / richiesta (Molt. x3)</option>
+    </select>
+    <p class="hint">EMP applicato = EMP di prima verifica × moltiplicatore.</p>
+   </div>
+  </div>
+ </section>
 
-    <!-- SCHEDA 1: PARAMETRI STRUMENTO -->
-    <div class="bg-white rounded-xl shadow-md p-6 border border-gray-100">
-      <h2 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">1. Parametri Strumento e Verifica</h2>
-      
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Classe Metrologica</label>
-          <select id="classe" onchange="calcolaTutto()" class="w-full border border-gray-300 rounded-lg p-2.5 bg-gray-50 focus:ring-2 focus:ring-blue-500">
-            <option value="1">Classe I (Speciale)</option>
-            <option value="2">Classe II (Fine)</option>
-            <option value="3" selected>Classe III (Media)</option>
-            <option value="4">Classe IIII (Ordinaria)</option>
-          </select>
-        </div>
+ <section class="card">
+  <div class="bar">
+   <h2>2. Misure di Pesata</h2>
+   <div class="btns">
+    <button type="button" id="btnAdd">+ Aggiungi Pesata</button>
+    <button type="button" class="sec" id="btnPrint">Stampa / PDF</button>
+    <button type="button" class="sec" id="btnReset">Azzera tutto</button>
+   </div>
+  </div>
+  <div class="scroll">
+   <table>
+    <thead>
+     <tr>
+      <th class="c" style="width:3rem">N.</th>
+      <th>Carico m (<span class="u">g</span>)</th>
+      <th>Lettura L (<span class="u">g</span>)</th>
+      <th>Errore E (L - m)</th>
+      <th>EMP Tollerato</th>
+      <th class="c">Esito</th>
+      <th class="c noprint" style="width:3rem">Azione</th>
+     </tr>
+    </thead>
+    <tbody id="tabellaBody"></tbody>
+   </table>
+  </div>
+ </section>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Divisione di verifica (e)</label>
-          <input type="text" id="div_e" inputmode="decimal" placeholder="Es. 0,1 o 1" oninput="gestisciInputPunto(this); calcolaTutto()" class="w-full border border-gray-300 rounded-lg p-2.5 bg-gray-50 focus:ring-2 focus:ring-blue-500">
-        </div>
+ <section class="card">
+  <h2>3. Esito complessivo</h2>
+  <div id="sintesi" role="status" aria-live="polite">Inserisci i dati per ottenere l'esito.</div>
+  <p class="note">Strumento di supporto: non sostituisce le procedure ufficiali di verifica.</p>
+ </section>
+</main>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Tipo di Verifica</label>
-          <select id="tipoVerifica" onchange="calcolaTutto()" class="w-full border border-gray-300 rounded-lg p-2.5 bg-gray-50 focus:ring-2 focus:ring-blue-500">
-            <option value="1">1 - Verifica Prima (Molt. x1)</option>
-            <option value="2">2 - Verifica Periodica (Molt. x2)</option>
-            <option value="3" selected>3 - Controlli casuali / richiesta (Molt. x3)</option>
-          </select>
-        </div>
-      </div>
-    </div>
+<script>
+const $ = id => document.getElementById(id);
+const CHIAVE = 'nawi-emp-v1';
+const fmt = new Intl.NumberFormat('it-IT', { maximumFractionDigits: 5 });
 
-    <!-- SCHEDA 2: TABELLA PESATE -->
-    <div class="bg-white rounded-xl shadow-md p-6 border border-gray-100">
-      <div class="flex justify-between items-center border-b pb-2 mb-4">
-        <h2 class="text-lg font-semibold text-gray-800">2. Misure di Pesata</h2>
-        <button onclick="aggiungiRiga()" class="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition">
-          + Aggiungi Pesata
-        </button>
-      </div>
+// Lettura numeri rigorosa: accetta solo cifre con un unico separatore decimale.
+function parseNum(s) {
+  s = String(s).trim().replace(/\s/g, '');
+  if (!/^-?\d+([.,]\d+)?$/.test(s)) return NaN;
+  return parseFloat(s.replace(',', '.'));
+}
 
-      <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
-          <thead>
-            <tr class="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider border-b">
-              <th class="p-3 w-12 text-center">N.</th>
-              <th class="p-3">Carico m (g/kg)</th>
-              <th class="p-3">Lettura L (g/kg)</th>
-              <th class="p-3">Errore E (L - m)</th>
-              <th class="p-3">EMP Tollerato</th>
-              <th class="p-3 text-center">Esito</th>
-              <th class="p-3 w-12 text-center">Azione</th>
-            </tr>
-          </thead>
-          <tbody id="tabellaBody">
-            <!-- Le righe verranno generate qui -->
-          </tbody>
-        </table>
-      </div>
-    </div>
+// Scrivendo, il punto diventa virgola.
+function puntoVirgola(input) {
+  const pos = input.selectionStart;
+  const nuovo = input.value.replace(/\./g, ',');
+  if (nuovo !== input.value) {
+    input.value = nuovo;
+    input.setSelectionRange(pos, pos);
+  }
+}
 
-  </main>
+function empBase(m, e, classe) {
+  const n = Math.round((m / e) * 1e6) / 1e6; // evita errori di virgola mobile sui confini
+  const soglie = {
+    1: [50000, 200000],
+    2: [5000, 20000],
+    3: [500, 2000],
+    4: [50, 200]
+  }[classe];
+  if (n <= soglie[0]) return 0.5 * e;
+  if (n <= soglie[1]) return 1.0 * e;
+  return 1.5 * e;
+}
 
-  <script>
-    let conteggioRighe = 0;
+function badge(cls, testo) {
+  return `<span class="badge ${cls}">${testo}</span>`;
+}
 
-    // Convertitore automatico da punto a virgola in scrittura
-    function gestisciInputPunto(input) {
-      let pos = input.selectionStart;
-      let valIniziale = input.value;
-      let valNuovo = valIniziale.replace('.', ',');
-      if (valIniziale !== valNuovo) {
-        input.value = valNuovo;
-        input.setSelectionRange(pos, pos);
-      }
+function calcolaRiga(tr) {
+  const classe = parseInt($('classe').value);
+  const tipo = parseInt($('tipoVerifica').value);
+  const unita = $('unita').value;
+  const e = parseNum($('div_e').value);
+  const im = tr.querySelector('.m-val'), il = tr.querySelector('.l-val');
+  const sm = im.value.trim(), sl = il.value.trim();
+  const m = parseNum(sm), l = parseNum(sl);
+  const cErr = tr.querySelector('.err'), cEmp = tr.querySelector('.emp'), cEsito = tr.querySelector('.esito');
+
+  const mBad = sm !== '' && !(m >= 0);
+  const lBad = sl !== '' && isNaN(l);
+  im.classList.toggle('bad', mBad);
+  il.classList.toggle('bad', lBad);
+
+  const reset = (stato, html) => {
+    cErr.textContent = '-'; cEmp.textContent = '-';
+    cEsito.innerHTML = html || '-';
+    tr.dataset.stato = stato;
+  };
+
+  if (mBad || lBad) return reset('inv', badge('inv', 'DATO NON VALIDO'));
+  if (sm === '' && sl === '') return reset('vuota');
+  if (sm === '' || sl === '' || !(e > 0)) return reset('inc');
+
+  const errore = l - m;
+  const emp = empBase(m, e, classe) * tipo;
+  const conforme = Math.abs(errore) <= emp + e * 1e-6;
+  const lontano = Math.abs(errore) > emp * 10;
+
+  cErr.textContent = `${fmt.format(errore)} ${unita}`;
+  cEmp.textContent = `±${fmt.format(emp)} ${unita}`;
+  cEsito.innerHTML = badge(conforme ? 'ok' : 'ko', conforme ? 'CONFORME' : 'NON CONFORME')
+    + (lontano ? '<div class="hint">Errore molto grande: controlla i valori.</div>' : '');
+  tr.dataset.stato = conforme ? 'ok' : 'ko';
+}
+
+function aggiornaSintesi() {
+  const righe = [...document.querySelectorAll('#tabellaBody tr')];
+  const conta = s => righe.filter(r => r.dataset.stato === s).length;
+  const ok = conta('ok'), ko = conta('ko'), inv = conta('inv'), inc = conta('inc');
+  const box = $('sintesi');
+  let cls = '', txt;
+  if (ok + ko + inv + inc === 0) {
+    txt = "Inserisci i dati per ottenere l'esito.";
+  } else if (inv) {
+    cls = 'inv';
+    txt = `Dati non validi in ${inv} riga/righe: correggili per ottenere l'esito.`;
+  } else if (ko) {
+    cls = 'ko';
+    txt = `STRUMENTO NON CONFORME: ${ko} pesata/e fuori tolleranza su ${ok + ko}.`;
+  } else if (ok && !inc) {
+    cls = 'ok';
+    txt = `STRUMENTO CONFORME: ${ok} pesata/e entro la tolleranza.`;
+  } else if (ok) {
+    cls = 'inv';
+    txt = `${ok} pesata/e conformi, ${inc} riga/righe incomplete (manca un valore o la divisione e).`;
+  } else {
+    cls = 'inv';
+    txt = 'Dati incompleti: inserisci la divisione e, i carichi e le letture.';
+  }
+  box.className = cls;
+  box.textContent = txt;
+}
+
+function calcolaTutto() {
+  const e = $('div_e').value.trim();
+  $('div_e').classList.toggle('bad', e !== '' && !(parseNum(e) > 0));
+  document.querySelectorAll('.u').forEach(s => s.textContent = $('unita').value);
+  document.querySelectorAll('#tabellaBody tr').forEach(calcolaRiga);
+  aggiornaSintesi();
+  salva();
+}
+
+function aggiungiRiga(m = '', l = '') {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+   <td class="c num"></td>
+   <td><input type="text" inputmode="decimal" class="m-val" placeholder="0,0" aria-label="Carico m" autocomplete="off"></td>
+   <td><input type="text" inputmode="decimal" class="l-val" placeholder="0,0" aria-label="Lettura L" autocomplete="off"></td>
+   <td class="err">-</td>
+   <td class="emp">-</td>
+   <td class="c esito">-</td>
+   <td class="c noprint"><button type="button" class="del" aria-label="Elimina pesata">&times;</button></td>`;
+  tr.querySelector('.m-val').value = m;
+  tr.querySelector('.l-val').value = l;
+  document.getElementById('tabellaBody').appendChild(tr);
+  numera();
+  calcolaRiga(tr);
+  return tr;
+}
+
+function numera() {
+  document.querySelectorAll('#tabellaBody tr').forEach((r, i) => r.querySelector('.num').textContent = i + 1);
+}
+
+// Incolla da Excel: due colonne (tab) oppure una sola colonna a partire dal campo selezionato.
+function incolla(ev, input) {
+  const testo = (ev.clipboardData || window.clipboardData).getData('text');
+  if (!testo) return;
+  const righe = testo.replace(/\r/g, '').split('\n');
+  while (righe.length && righe[righe.length - 1].trim() === '') righe.pop();
+  if (righe.length < 2 && !testo.includes('\t')) return; // incolla normale
+  ev.preventDefault();
+  let tr = input.closest('tr');
+  const colL = input.classList.contains('l-val');
+  const pulisci = v => v.trim().replace(/\./g, ',');
+  righe.forEach(riga => {
+    if (!tr) tr = aggiungiRiga();
+    const v = riga.split('\t');
+    if (v.length === 1) {
+      tr.querySelector(colL ? '.l-val' : '.m-val').value = pulisci(v[0]);
+    } else {
+      tr.querySelector('.m-val').value = pulisci(v[0]);
+      tr.querySelector('.l-val').value = pulisci(v[1]);
     }
+    tr = tr.nextElementSibling;
+  });
+  calcolaTutto();
+}
 
-    function gestisciIncolla(event, inputIniziale) {
-      let clipboardData = (event.clipboardData || window.clipboardData).getData('text');
-      if (!clipboardData) return;
-
-      let righePasted = clipboardData.trim().split(/\r\n|\r|\n/);
-      if (righePasted.length > 0 && righePasted[0].includes('\t')) {
-        event.preventDefault();
-        let rigaCorrente = inputIniziale.closest('tr');
-
-        righePasted.forEach((testoRiga) => {
-          let valori = testoRiga.split('\t');
-          if (!rigaCorrente) {
-            rigaCorrente = aggiungiRiga();
-          }
-
-          let inputM = rigaCorrente.querySelector('.m-val');
-          let inputL = rigaCorrente.querySelector('.l-val');
-
-          if (valori[0] !== undefined && inputM) inputM.value = valori[0].trim().replace('.', ',');
-          if (valori[1] !== undefined && inputL) inputL.value = valori[1].trim().replace('.', ',');
-
-          calcolaRiga(rigaCorrente);
-          rigaCorrente = rigaCorrente.nextElementSibling;
-        });
-      }
-    }
-
-    function aggiungiRiga(valM = '', valL = '') {
-      conteggioRighe++;
-      const tbody = document.getElementById('tabellaBody');
-      const tr = document.createElement('tr');
-      tr.className = "border-b border-gray-100 hover:bg-gray-50 transition";
-      tr.id = `riga-${conteggioRighe}`;
-
-      tr.innerHTML = `
-        <td class="p-3 text-center text-sm text-gray-500 font-medium num-riga"></td>
-        <td class="p-3">
-          <input type="text" inputmode="decimal" value="${valM}" placeholder="0,0"
-                 onpaste="gestisciIncolla(event, this)"
-                 oninput="gestisciInputPunto(this); calcolaRiga(this.closest('tr'))" 
-                 class="m-val w-full border border-gray-300 rounded px-2.5 py-1.5 text-sm focus:ring-1 focus:ring-blue-500">
-        </td>
-        <td class="p-3">
-          <input type="text" inputmode="decimal" value="${valL}" placeholder="0,0"
-                 onpaste="gestisciIncolla(event, this)"
-                 oninput="gestisciInputPunto(this); calcolaRiga(this.closest('tr'))" 
-                 class="l-val w-full border border-gray-300 rounded px-2.5 py-1.5 text-sm focus:ring-1 focus:ring-blue-500">
-        </td>
-        <td class="p-3 text-sm font-semibold err-val text-gray-600">-</td>
-        <td class="p-3 text-sm text-gray-600 emp-val">-</td>
-        <td class="p-3 text-center esito-val">-</td>
-        <td class="p-3 text-center">
-          <button onclick="rimuoviRiga(this)" class="text-red-500 hover:text-red-700 font-bold text-lg">&times;</button>
-        </td>
-      `;
-
-      tbody.appendChild(tr);
-      aggiornaNumerazione();
-      if (valM || valL) calcolaRiga(tr);
-      return tr;
-    }
-
-    function rimuoviRiga(btn) {
-      btn.closest('tr').remove();
-      aggiornaNumerazione();
-    }
-
-    function aggiornaNumerazione() {
-      const righe = document.querySelectorAll('#tabellaBody tr');
-      righe.forEach((riga, index) => {
-        riga.querySelector('.num-riga').innerText = index + 1;
-      });
-    }
-
-    function calcolaEMPBase(m, e, classe) {
-      const n = m / e;
-      if (classe === 1) {
-        if (n <= 50000) return 0.5 * e;
-        if (n <= 200000) return 1.0 * e;
-        return 1.5 * e;
-      } else if (classe === 2) {
-        if (n <= 5000) return 0.5 * e;
-        if (n <= 20000) return 1.0 * e;
-        return 1.5 * e;
-      } else if (classe === 3) {
-        if (n <= 500) return 0.5 * e;
-        if (n <= 2000) return 1.0 * e;
-        return 1.5 * e;
-      } else if (classe === 4) {
-        if (n <= 50) return 0.5 * e;
-        if (n <= 200) return 1.0 * e;
-        return 1.5 * e;
-      }
-      return 0;
-    }
-
-    function calcolaRiga(riga) {
-      const classe = parseInt(document.getElementById('classe').value);
-      const divEInput = document.getElementById('div_e').value.replace(',', '.');
-      const e = parseFloat(divEInput);
-
-      const valM = riga.querySelector('.m-val').value.replace(',', '.');
-      const valL = riga.querySelector('.l-val').value.replace(',', '.');
-
-      const m = parseFloat(valM);
-      const l = parseFloat(valL);
-
-      const cellaErr = riga.querySelector('.err-val');
-      const cellaEmp = riga.querySelector('.emp-val');
-      const cellaEsito = riga.querySelector('.esito-val');
-
-      if (isNaN(e) || e <= 0 || isNaN(m) || isNaN(l)) {
-        cellaErr.innerText = '-';
-        cellaEmp.innerText = '-';
-        cellaEsito.innerHTML = '-';
-        return;
-      }
-
-      const errore = l - m;
-      const tipoVerifica = parseInt(document.getElementById('tipoVerifica').value);
-      const moltiplicatore = tipoVerifica === 1 ? 1 : (tipoVerifica === 2 ? 2 : 3);
-      
-      const empBase = calcolaEMPBase(m, e, classe);
-      const empFinale = empBase * moltiplicatore;
-
-      const erroreAssoluto = Math.abs(errore);
-      const conforme = erroreAssoluto <= (empFinale + 0.0000001);
-
-      const formattatore = new Intl.NumberFormat('it-IT', { maximumFractionDigits: 5 });
-
-      cellaErr.innerText = formattatore.format(errore);
-      cellaEmp.innerText = `±${formattatore.format(empFinale)}`;
-
-      if (conforme) {
-        cellaEsito.innerHTML = `<span class="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-1 rounded-full">CONFORME</span>`;
-      } else {
-        cellaEsito.innerHTML = `<span class="bg-red-100 text-red-800 text-xs font-semibold px-2.5 py-1 rounded-full">NON CONFORME</span>`;
-      }
-    }
-
-    function calcolaTutto() {
-      const righe = document.querySelectorAll('#tabellaBody tr');
-      righe.forEach(riga => calcolaRiga(riga));
-    }
-
-    // Registrazione del Service Worker ufficiale
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js')
-          .then(reg => console.log('Service Worker Registrato:', reg))
-          .catch(err => console.log('Errore SW:', err));
-      });
-    }
-
-    // Inizializza con 3 righe vuote
-    window.onload = () => {
-      for (let i = 0; i < 3; i++) aggiungiRiga();
+function salva() {
+  try {
+    const dati = {
+      classe: $('classe').value, e: $('div_e').value, tipo: $('tipoVerifica').value, unita: $('unita').value,
+      righe: [...document.querySelectorAll('#tabellaBody tr')].map(r => [r.querySelector('.m-val').value, r.querySelector('.l-val').value])
     };
-  </script>
+    localStorage.setItem(CHIAVE, JSON.stringify(dati));
+  } catch (err) { /* archiviazione non disponibile: si continua senza salvare */ }
+}
+
+function carica() {
+  try {
+    const dati = JSON.parse(localStorage.getItem(CHIAVE) || 'null');
+    if (!dati) return false;
+    $('classe').value = dati.classe; $('div_e').value = dati.e;
+    $('tipoVerifica').value = dati.tipo; $('unita').value = dati.unita;
+    (dati.righe || []).forEach(([m, l]) => aggiungiRiga(m, l));
+    return true;
+  } catch (err) { return false; }
+}
+
+// Eventi
+const corpo = $('tabellaBody');
+corpo.addEventListener('input', ev => {
+  if (ev.target.matches('.m-val,.l-val')) { puntoVirgola(ev.target); calcolaTutto(); }
+});
+corpo.addEventListener('paste', ev => {
+  if (ev.target.matches('.m-val,.l-val')) incolla(ev, ev.target);
+});
+corpo.addEventListener('click', ev => {
+  const btn = ev.target.closest('.del');
+  if (!btn) return;
+  const tr = btn.closest('tr');
+  const haDati = tr.querySelector('.m-val').value || tr.querySelector('.l-val').value;
+  if (haDati && !confirm('Eliminare questa pesata?')) return;
+  tr.remove();
+  numera();
+  calcolaTutto();
+});
+$('div_e').addEventListener('input', ev => { puntoVirgola(ev.target); calcolaTutto(); });
+['classe', 'tipoVerifica', 'unita'].forEach(id => $(id).addEventListener('change', calcolaTutto));
+$('btnAdd').addEventListener('click', () => { aggiungiRiga().querySelector('.m-val').focus(); calcolaTutto(); });
+$('btnPrint').addEventListener('click', () => window.print());
+$('btnReset').addEventListener('click', () => {
+  if (!confirm('Azzerare tutti i dati inseriti?')) return;
+  corpo.innerHTML = '';
+  $('div_e').value = '';
+  for (let i = 0; i < 3; i++) aggiungiRiga();
+  calcolaTutto();
+});
+window.addEventListener('beforeprint', () => {
+  $('dataStampa').textContent = 'Data: ' + new Date().toLocaleDateString('it-IT');
+});
+
+// Service Worker (PWA)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(err => console.log('Errore SW:', err));
+  });
+}
+
+// Avvio
+if (!carica() || !corpo.children.length) {
+  for (let i = 0; i < 3; i++) aggiungiRiga();
+}
+calcolaTutto();
+</script>
 </body>
 </html>
